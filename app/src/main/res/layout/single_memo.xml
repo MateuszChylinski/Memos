@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:orientation="vertical"
+    android:weightSum="100">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/memo_shape"
+        android:padding="9dp">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="23sp"
+        android:lines="1"
+        android:layout_weight="90"
+        android:gravity="center_vertical"
+        android:text="New Memo"
+        android:layout_marginTop="3dp"
+        android:textColor="#4D4637"/>
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_weight="10"
+        android:textAlignment="center"
+        android:layout_gravity="center_vertical"
+        android:text="Friday\n20 April"
+        android:textColor="#4D4637"
+        />
+
+    </LinearLayout>
+</LinearLayout>
