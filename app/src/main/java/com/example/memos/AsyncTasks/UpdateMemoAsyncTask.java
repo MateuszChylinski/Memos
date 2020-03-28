@@ -8,9 +8,9 @@ import com.example.memos.Models.Note;
 
 public class UpdateMemoAsyncTask extends AsyncTask<Note, Void, Void> {
 
-   private MemoInterface mInterface;
+    private MemoInterface mInterface;
 
-    public UpdateMemoAsyncTask (MemoInterface memoInterface){
+    public UpdateMemoAsyncTask(MemoInterface memoInterface) {
         this.mInterface = memoInterface;
     }
 

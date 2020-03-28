@@ -9,7 +9,7 @@ public class InsertMemoAsyncTask extends AsyncTask<Note, Void, Void> {
 
     private MemoInterface memoInterface;
 
-    public InsertMemoAsyncTask(MemoInterface memoInterface){
+    public InsertMemoAsyncTask(MemoInterface memoInterface) {
         this.memoInterface = memoInterface;
     }
 

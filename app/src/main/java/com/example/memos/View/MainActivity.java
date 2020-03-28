@@ -1,4 +1,4 @@
-package com.example.memos;
+package com.example.memos.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,9 +12,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.example.memos.Dao.MemoRepository;
+
 import com.example.memos.Models.Note;
-import com.example.memos.adapters.MemoAdapter;
+import com.example.memos.R;
+import com.example.memos.Adapter.MemoAdapter;
+import com.example.memos.ViewModel.MemoViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,23 +27,23 @@ public class MainActivity extends AppCompatActivity implements MemoAdapter.OnNot
 
     //Vars
     private ArrayList<Note> mNotes = new ArrayList<>();
-    private MemoRepository mRepository;
+    private MemoViewModel mViewModel;
     private MemoAdapter mMemoAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRepository = new MemoRepository(this);
+        mViewModel = new MemoViewModel(getApplication());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.memoToolbar);
         setSupportActionBar(toolbar);
         setTitle("My memos");
 
         initRecyclerView();
-
     }
+
     //This method will be called after getting result from memo_content such as new memo, or edited existing memo.
     @Override
     protected void onResume() {
@@ -48,14 +51,14 @@ public class MainActivity extends AppCompatActivity implements MemoAdapter.OnNot
         getMemos();
     }
 
-    private void getMemos(){
-        mRepository.getAllMemos().observe(this, new Observer<List<Note>>() {
+    private void getMemos() {
+        mViewModel.getMemos().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
-                if (mNotes.size() > 0){
+                if (mNotes.size() > 0) {
                     mNotes.clear();
                 }
-                if (notes != null){
+                if (notes != null) {
                     mNotes.addAll(notes);
                     mMemoAdapter.watchMemoChanges((ArrayList<Note>) notes);
                 }
@@ -68,21 +71,23 @@ public class MainActivity extends AppCompatActivity implements MemoAdapter.OnNot
         getMenuInflater().inflate(R.menu.icon_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.addNewNote:
                 startActivity(new Intent(this, memo_content.class));
                 break;
 
             case R.id.deleteAllNotes:
-                mRepository.deleteAllMemos();
+                mViewModel.deleteAllMemos();
                 break;
 
         }
         return super.onOptionsItemSelected(item);
     }
-    private void initRecyclerView(){
+
+    private void initRecyclerView() {
         //UI
         RecyclerView mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements MemoAdapter.OnNot
         //delete swiped memo
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            mRepository.deleteMemo(mNotes.get(viewHolder.getAdapterPosition()));
+            mViewModel.deleteSingleMemo(mNotes.get(viewHolder.getAdapterPosition()));
         }
     };
 }

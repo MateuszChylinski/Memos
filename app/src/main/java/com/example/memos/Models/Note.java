@@ -20,13 +20,14 @@ public class Note implements Parcelable {
     @ColumnInfo(name = "timestamp")
     public String timestamp;
 
-    public Note(String title, String content, String timestamp){
+    public Note(String title, String content, String timestamp) {
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
     }
-    public Note() {}
 
+    public Note() {
+    }
 
     protected Note(Parcel in) {
         id = in.readInt();
@@ -58,16 +59,6 @@ public class Note implements Parcelable {
         dest.writeString(title);
         dest.writeString(content);
         dest.writeString(timestamp);
-    }
-
-    @Override
-    public String toString() {
-        return "Note{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", timestamp='" + timestamp + '\'' +
-                '}';
     }
 
     public int getId() {

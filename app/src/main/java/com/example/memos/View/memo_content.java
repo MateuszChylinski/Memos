@@ -1,6 +1,7 @@
-package com.example.memos;
+package com.example.memos.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -11,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.memos.Dao.MemoRepository;
+import com.example.memos.LineEditText;
 import com.example.memos.Models.Note;
+import com.example.memos.R;
+import com.example.memos.ViewModel.MemoViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,34 +27,34 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
     //Vars
     private Note mNote;
     private GestureDetector mDetector;
-    private MemoRepository mRepository;
+    private MemoViewModel mViewModel;
 
     /*
     1 - enable edit mode
     2 - disable edit mode
      */
     private int CURRENT_STATE = 0;
-    private boolean isEdited;
-    private String timestamp;
+    private boolean mIsEdited;
+    private String mTimestamp;
 
     //UI
-    TextView title;
-    ImageView backArrow, checkMark;
-    EditText editTitle;
-    LineEditText content;
+    TextView mTitle;
+    ImageView mBackArrow, mCheckMark;
+    EditText mEditTitle;
+    LineEditText mContent;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memo_content);
-        mRepository = new MemoRepository(this);
+        mViewModel = new MemoViewModel(getApplication());
 
-        title = findViewById(R.id.memo_title);
-        content = findViewById(R.id.memo_content);
-        backArrow = findViewById(R.id.back_arrow_memo);
-        checkMark = findViewById(R.id.save_memo);
-        editTitle = findViewById(R.id.edit_title_memo);
+        mTitle = findViewById(R.id.memo_title);
+        mContent = findViewById(R.id.memo_content);
+        mBackArrow = findViewById(R.id.back_arrow_memo);
+        mCheckMark = findViewById(R.id.save_memo);
+        mEditTitle = findViewById(R.id.edit_title_memo);
 
         mDetector = new GestureDetector(this, this);
         mDetector.setOnDoubleTapListener(this);
@@ -64,7 +67,7 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
         Date date = Calendar.getInstance().getTime();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE\nd MMMM");
-        timestamp = simpleDateFormat.format(date);
+        mTimestamp = simpleDateFormat.format(date);
     }
 
     private void getMemo() {
@@ -87,8 +90,8 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
 
     //set view with data of the existing memo
     private void setMemo() {
-        title.setText(mNote.getTitle());
-        content.setText(mNote.getContent());
+        mTitle.setText(mNote.getTitle());
+        mContent.setText(mNote.getContent());
     }
 
     private void prepareAppropriateMode() {
@@ -106,43 +109,48 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
     }
 
     private void enableEditMode() {
-        backArrow.setVisibility(View.VISIBLE);
-        title.setVisibility(View.GONE);
+        mBackArrow.setVisibility(View.VISIBLE);
+        mTitle.setVisibility(View.GONE);
 
-        checkMark.setVisibility(View.GONE);
-        editTitle.setVisibility(View.VISIBLE);
+        mCheckMark.setVisibility(View.GONE);
+        mEditTitle.setVisibility(View.VISIBLE);
 
         //if memo is new, create new Note object and set hints in views
         if (mNote == null) {
             mNote = new Note();
-            editTitle.setHint("Title");
-            content.setHint("Content");
+            mEditTitle.setHint("Title");
+            mContent.setHint("Content");
         } else {
-            editTitle.setText(mNote.getTitle());
-            editTitle.requestFocus();
-            content.setText(mNote.getContent());
+            mEditTitle.setText(mNote.getTitle());
+            mEditTitle.requestFocus();
+            mContent.setText(mNote.getContent());
         }
+        mContent.setFocusableInTouchMode(true);
+        mContent.setEnabled(true);
+        mContent.setClickable(true);
     }
 
     private void disableEditMode() {
-        checkMark.setVisibility(View.VISIBLE);
-        title.setVisibility(View.VISIBLE);
+        mCheckMark.setVisibility(View.VISIBLE);
+        mTitle.setVisibility(View.VISIBLE);
 
-        backArrow.setVisibility(View.GONE);
-        editTitle.setVisibility(View.GONE);
+        mBackArrow.setVisibility(View.GONE);
+        mEditTitle.setVisibility(View.GONE);
 
-        title.setText(mNote.getTitle());
+        mTitle.setText(mNote.getTitle());
+
+        mContent.setFocusable(false);
     }
 
     //prepare appropriate view to handle data manipulations (such as edit/update)
     private void setListeners() {
-        title.setOnTouchListener(this);
+        mTitle.setOnTouchListener(this);
 
-        if (backArrow.getVisibility() == View.VISIBLE) {
-            backArrow.setOnClickListener(this);
+        if (mBackArrow.getVisibility() == View.VISIBLE) {
+            mBackArrow.setOnClickListener(this);
         }
-        if (checkMark.getVisibility() == View.VISIBLE) {
-            checkMark.setOnClickListener(this);
+        if (mCheckMark.getVisibility() == View.VISIBLE) {
+            mCheckMark.setOnClickListener(this);
         }
     }
 
@@ -153,7 +161,7 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
             case R.id.back_arrow_memo:
                 checkDataCorrectness();
                 break;
-            }
+        }
     }
 
     private void checkDataCorrectness() {
@@ -162,24 +170,22 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
             case 3: // memo was in update mode
 
                 //make sure that memo has title and description/content
-                if (editTitle.getText().toString().isEmpty() || content.getText().toString().isEmpty()) {
+                if (mEditTitle.getText().toString().isEmpty() || mContent.getText().toString().isEmpty()) {
                     Toast.makeText(memo_content.this, "Title and content cannot be empty!", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                mNote.setTitle(editTitle.getText().toString());
-                mNote.setContent(content.getText().toString());
-                mNote.setTimestamp(timestamp);
+                mNote.setTitle(mEditTitle.getText().toString());
+                mNote.setContent(mContent.getText().toString());
+                mNote.setTimestamp(mTimestamp);
                 dealWithMemo();
                 break;
 
-
             case 2: //already existing memo. Check if user make any change, if he does, check if title and description is not empty
-                if (title.getText().toString().isEmpty() || content.getText().toString().isEmpty()) {
+                if (mTitle.getText().toString().isEmpty() || mContent.getText().toString().isEmpty()) {
                     Toast.makeText(memo_content.this, "Title and content cannot be empty!", Toast.LENGTH_SHORT).show();
                     break;
-                }
-                else if (title.getText().toString().equals(mNote.getTitle()) || content.getText().toString().equals(mNote.getContent())){
-                    Toast.makeText(memo_content.this,"Memo wasn't edited",Toast.LENGTH_SHORT).show();
+                } else if (mTitle.getText().toString().equals(mNote.getTitle()) || mContent.getText().toString().equals(mNote.getContent())) {
+                    Toast.makeText(memo_content.this, "Memo wasn't edited", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(memo_content.this, MainActivity.class));
                     break;
                 }
@@ -188,12 +194,12 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
     }
 
     //check if memo was new, or user wanted to update already existing
-    private void dealWithMemo(){
-        if (isEdited){
-                mRepository.updateMemo(mNote);
-                startActivity(new Intent(memo_content.this, MainActivity.class));
-        }else{
-            mRepository.insertNewMemo(mNote);
+    private void dealWithMemo() {
+        if (mIsEdited) {
+            mViewModel.updateMemo(mNote);
+            startActivity(new Intent(memo_content.this, MainActivity.class));
+        } else {
+            mViewModel.insertMemo(mNote);
             startActivity(new Intent(memo_content.this, MainActivity.class));
         }
     }
@@ -207,36 +213,45 @@ public class memo_content extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onDoubleTap(MotionEvent e) {
         CURRENT_STATE = 3;
-        isEdited = true;
+        mIsEdited = true;
         prepareAppropriateMode();
         return true;
     }
-
-
-
-
 
     // don't need this stuff for now. It's just needed to keep everything works.
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
         return false;
     }
+
     @Override
     public boolean onDown(MotionEvent e) {
         return true;
     }
+
     @Override
-    public void onShowPress(MotionEvent e) {}
+    public void onShowPress(MotionEvent e) {
+    }
+
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         return false;
     }
+
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {return false;}
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
     @Override
-    public void onLongPress(MotionEvent e) {}
+    public void onLongPress(MotionEvent e) {
+    }
+
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {return false;}
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
         return false;

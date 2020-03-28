@@ -16,13 +16,16 @@ public interface MemoInterface {
 
     @Insert
     void insertMemo(Note... note);
+
     @Update
     void updateMemo(Note... note);
+
     @Delete
     void deleteMemo(Note... note);
 
-    @Query("DELETE FROM note" )
+    @Query("DELETE FROM note")
     void deleteAllMemos();
+
     @Query("SELECT * FROM note")
     LiveData<List<Note>> getAllMemos();
 }

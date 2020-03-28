@@ -5,11 +5,11 @@ import android.os.AsyncTask;
 import com.example.memos.Dao.MemoInterface;
 import com.example.memos.Models.Note;
 
-public class DeleteAsyncTask extends AsyncTask<Note, Void, Void> {
+public class DeleteAllMemosAsyncTask extends AsyncTask<Note, Void, Void> {
 
     private MemoInterface mInterface;
 
-    public DeleteAsyncTask (MemoInterface memoInterface){
+    public DeleteAllMemosAsyncTask(MemoInterface memoInterface) {
         this.mInterface = memoInterface;
     }
 
